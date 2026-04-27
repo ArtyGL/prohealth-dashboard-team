@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ProHealth — Product Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#08101e;--bg2:#0d1525;--card:#111d30;--card2:#16243a;--border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.11);
+  --t:#e2eaf7;--t2:#7b8ea8;--t3:#3d4e63;
+  --accent:#14b8a6;--blue:#3b82f6;
+  --g:#22c55e;--g-bg:rgba(34,197,94,0.1);--g-b:rgba(34,197,94,0.18);
+  --a:#f59e0b;--a-bg:rgba(245,158,11,0.1);--a-b:rgba(245,158,11,0.18);
+  --r:#ef4444;--r-bg:rgba(239,68,68,0.1);--r-b:rgba(239,68,68,0.18);
+  --sb:220px;--content-max:1060px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--t);font-family:'Inter',sans-serif;font-size:13px;line-height:1.5;overflow-x:hidden}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:2px}
+
+/* ── SIDEBAR ── */
+.sb{position:fixed;top:0;left:0;bottom:0;width:var(--sb);background:rgba(8,16,30,0.97);backdrop-filter:blur(16px);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:100;overflow-y:auto}
+.sb-head{padding:18px 14px 14px;border-bottom:1px solid var(--border);flex-shrink:0}
+.sb-name{font-size:15px;font-weight:700;color:var(--t);letter-spacing:-0.3px}
+.sb-sub{font-size:10px;color:var(--t3);font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+.sb-nav{flex:1;padding:6px 0}
+.sb-sec{font-size:9.5px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:1.2px;color:var(--t3);padding:10px 14px 3px}
+.sbi{display:flex;align-items:center;gap:7px;padding:6px 14px;color:var(--t2);font-size:12px;border-left:2px solid transparent;transition:all .13s;cursor:pointer;text-decoration:none}
+.sbi:hover{color:var(--t);background:rgba(255,255,255,0.025)}
+.sbi.on{color:var(--t);border-left-color:var(--accent);background:rgba(20,184,166,0.06)}
+.sbi .d{width:4px;height:4px;border-radius:50%;background:var(--t3);transition:background .13s;flex-shrink:0}
+.sbi.on .d,.sbi:hover .d{background:var(--accent)}
+.sbi .sd{width:6px;height:6px;border-radius:50%;margin-left:auto;flex-shrink:0}
+.sbi.sub{padding-left:25px;font-size:11.5px}
+
+/* ── MAIN ── */
+.main{margin-left:var(--sb);min-height:100vh;position:relative}
+.wrap{max-width:var(--content-max);margin:0 auto;padding:0 36px}
+.sec{padding:56px 0 64px;border-bottom:1px solid var(--border)}
+.sec-tag{font-family:'JetBrains Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);margin-bottom:5px}
+.sec-title{font-size:20px;font-weight:700;color:var(--t);letter-spacing:-0.3px;line-height:1.15;display:flex;align-items:center;gap:10px}
+.sec-title-big{font-size:18px;font-weight:700;color:var(--t);letter-spacing:-0.2px;line-height:1.15;display:flex;align-items:center;gap:10px}
+.sec-title svg,.sec-title-big svg{display:block;flex-shrink:0;align-self:center}
+.sec-sub{font-size:12.5px;color:var(--t2);margin-top:3px;line-height:1.6}
+
+/* ── HERO ── */
+.hero{padding:36px 0;border-bottom:1px solid var(--border)}
+.hero-wrap{max-width:var(--content-max);margin:0 auto;padding:0 36px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.h-stage{display:inline-flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--border2);border-radius:5px;padding:3px 10px;font-size:10.5px;font-family:'JetBrains Mono',monospace;color:var(--t2);margin-bottom:7px}
+.h-stage b{color:var(--accent)}
+.h-name{font-size:24px;font-weight:700;letter-spacing:-0.5px;line-height:1.1}
+.h-desc{font-size:12px;color:var(--t2);margin-top:2px}
+.h-pct-wrap{display:flex;flex-direction:column;align-items:center;gap:2px;flex-shrink:0}
+.h-pct{font-size:30px;font-weight:700;color:var(--a);font-family:'JetBrains Mono',monospace;line-height:1}
+.h-pct-l{font-size:9px;color:var(--t3);font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.8px;text-align:center}
+
+/* ── STATUS BADGES ── */
+.st-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:999px;font-size:10px;font-weight:600;font-family:'JetBrains Mono',monospace;white-space:nowrap}
+.st-yes{background:rgba(34,197,94,0.08);color:#22c55e;border:1px solid rgba(34,197,94,0.18)}
+.st-part{background:rgba(245,158,11,0.08);color:#f59e0b;border:1px solid rgba(245,158,11,0.18)}
+.st-no{background:rgba(239,68,68,0.07);color:#ef4444;border:1px solid rgba(239,68,68,0.18)}
+
+/* ── BULLET ICONS ── */
+.bico{position:relative;display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:3px;font-size:9px;font-weight:700;flex-shrink:0;margin-top:2px;font-family:'JetBrains Mono',monospace;line-height:1}
+.bico-g{background:rgba(34,197,94,0.12);color:#22c55e}
+.bico-r{background:rgba(239,68,68,0.1);color:#ef4444}
+.bico-b{background:rgba(59,130,246,0.1);color:#3b82f6}
+.bico-a{background:rgba(245,158,11,0.1);color:#f59e0b}
+.bico-d{background:rgba(20,184,166,0.1);color:var(--accent)}
+.bico-d,.bico-g{font-size:0}
+.bico-d::after,.bico-g::after{content:'';position:absolute;top:50%;left:50%;width:6px;height:3.5px;border-bottom:1px solid currentColor;border-left:1px solid currentColor;transform:translate(-50%,-50%) rotate(-45deg);border-radius:0}
+.st-chk{display:inline-block;width:6px;height:3.5px;border-bottom:1px solid currentColor;border-left:1px solid currentColor;transform:rotate(-45deg);border-radius:0;margin-right:4px;vertical-align:2px}
+
+/* ── TSG 3-COL ── */
+.tsg{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:0;align-items:stretch;margin-top:16px}
+.tsg-col{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:18px 20px}
+.tsg-arrow{display:flex;align-items:center;justify-content:center;width:48px;flex-shrink:0}
+.tsg-arrow-svg{color:var(--t3);font-size:20px}
+.tsg-col.goal{border-color:rgba(20,184,166,0.2);background:rgba(20,184,166,0.03)}
+.tsg-col.sol{border-color:rgba(59,130,246,0.18);background:rgba(59,130,246,0.03)}
+.tsg-label-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.tsg-icon-sq{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px}
+.tsg-col-title{font-size:9.5px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:1px;color:var(--t3)}
+.tsg-col.goal .tsg-col-title{color:var(--accent)}
+.tsg-col.sol .tsg-col-title{color:var(--blue)}
+.tsg-head{font-size:15px;font-weight:700;color:var(--t);margin-bottom:10px;line-height:1.2}
+.bullet-list{display:flex;flex-direction:column;gap:6px}
+.bl-item{display:flex;gap:7px;align-items:flex-start;font-size:12.5px;color:var(--t2);line-height:1.5}
+.bl-item::before{content:'›';color:var(--accent);font-size:13px;line-height:1.45;flex-shrink:0}
+
+/* ── EXEC SUMMARY ── */
+.exec-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.exec-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:16px 18px}
+.exec-card-tag{font-size:9px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:1.2px;color:var(--t3);margin-bottom:8px}
+.exec-card-title{font-size:13px;font-weight:600;color:var(--t);margin-bottom:8px;line-height:1.3}
+.exec-items{display:flex;flex-direction:column;gap:5px}
+.exec-item{display:flex;gap:7px;align-items:flex-start;font-size:12px;color:var(--t2);line-height:1.5}
+
+/* ── SECTION ICON ── */
+.sec-icon-row{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.sec-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.sec-sub-sm{font-size:12px;color:var(--t3);margin-top:4px;line-height:1.5}
+.sec-hint{font-size:11px;color:var(--t3);margin-top:3px;font-style:italic}
+
+/* ── ACCORDION L1 ── */
+.acc{display:flex;flex-direction:column;gap:4px;margin-top:16px}
+.acc-row{background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden;transition:border-color .15s}
+.acc-row:hover{border-color:var(--border2)}
+.acc-row.open{border-color:rgba(20,184,166,0.2)}
+.acc-prog{height:2px;background:var(--border);border-radius:2px 2px 0 0;overflow:hidden}
+.acc-prog-fill{height:100%;border-radius:2px;transition:width 1s ease}
+.acc-h{display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;user-select:none;transition:background .13s}
+.acc-h:hover{background:rgba(255,255,255,0.015)}
+.acc-num{width:28px;height:28px;border-radius:6px;background:var(--card2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3);flex-shrink:0;transition:all .13s}
+.acc-row.open .acc-num{background:rgba(20,184,166,0.08);border-color:rgba(20,184,166,0.2);color:var(--accent)}
+.acc-info{flex:1;min-width:0}
+.acc-name{font-size:13px;font-weight:600;color:var(--t);line-height:1.3}
+.acc-short{font-size:11.5px;color:var(--t3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.acc-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.acc-dur{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--t3);white-space:nowrap}
+.acc-arrow{color:var(--t3);font-size:16px;transition:transform .18s;flex-shrink:0;width:16px;text-align:center}
+.acc-row.open .acc-arrow{transform:rotate(90deg);color:var(--accent)}
+.acc-body{display:none;border-top:1px solid var(--border);animation:sld .15s ease}
+.acc-row.open .acc-body{display:block}
+@keyframes sld{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:translateY(0)}}
+.acc-inner{padding:14px}
+
+/* ── ACCORDION L2 (nested) ── */
+.l2-list{display:flex;flex-direction:column;gap:3px;margin-bottom:10px}
+.l2-row{background:rgba(0,0,0,0.18);border:1px solid var(--border);border-radius:6px;overflow:hidden;transition:border-color .13s}
+.l2-row:hover{border-color:var(--border2)}
+.l2-row.open{border-color:rgba(20,184,166,0.15)}
+.l2-h{display:flex;align-items:center;gap:9px;padding:8px 12px;cursor:pointer;user-select:none;transition:background .13s}
+.l2-h:hover{background:rgba(255,255,255,0.015)}
+.l2-num{width:22px;height:22px;border-radius:5px;background:var(--card2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--t3);flex-shrink:0;transition:all .13s}
+.l2-row.open .l2-num{background:rgba(20,184,166,0.08);border-color:rgba(20,184,166,0.2);color:var(--accent)}
+.l2-name{flex:1;font-size:12.5px;font-weight:500;color:var(--t);line-height:1.3}
+.l2-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.l2-arrow{color:var(--t3);font-size:14px;transition:transform .15s;width:14px;text-align:center;flex-shrink:0}
+.l2-row.open .l2-arrow{transform:rotate(90deg);color:var(--accent)}
+.l2-body{display:none;border-top:1px solid var(--border);animation:sld .12s ease}
+.l2-row.open .l2-body{display:block}
+.l2-inner{padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+.l3-item{display:flex;gap:8px;align-items:flex-start;font-size:12px;color:var(--t2);line-height:1.5}
+
+/* ── WHY BLOCK ── */
+.acc-why-block{padding:10px 12px;background:rgba(255,255,255,0.025);border-left:2px solid rgba(255,255,255,0.2);border-radius:0 5px 5px 0;font-size:12px;color:var(--t2);line-height:1.6}
+.acc-why-block b{color:var(--t)}
+
+/* ── RISKS (open accordion style) ── */
+.risks-list{display:flex;flex-direction:column;gap:4px;margin-top:16px}
+.risk-card{background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.risk-card-head{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid var(--border)}
+.risk-card-num{width:28px;height:28px;border-radius:6px;background:var(--card2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3);flex-shrink:0}
+.risk-icon-box{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.risk-card-title{flex:1;font-size:13px;font-weight:600;color:var(--t)}
+.risk-card-items{padding:10px 14px 12px 52px;display:flex;flex-direction:column;gap:6px}
+.risk-item-row{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;color:var(--t2);line-height:1.5}
+.rx{color:#ef4444;font-size:11px;font-weight:700;flex-shrink:0;margin-top:2px;font-family:'JetBrains Mono',monospace;line-height:1.5}
+
+/* ── GANTT ── */
+.gantt-wrap{background:var(--card);border:1px solid var(--border);border-radius:8px;margin-top:16px;overflow:hidden;position:relative}
+.gantt-scroll{overflow-x:auto;padding:0 18px 18px 0;cursor:grab;user-select:none}
+.gantt-scroll.dragging{cursor:grabbing}
+.gtt-wk{flex:1;text-align:center;font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--t3);border-left:1px solid rgba(255,255,255,0.04);padding:2px 0}
+.gtt-rows{display:flex;flex-direction:column;gap:0}
+.gtt-row{min-height:44px;border-bottom:1px solid rgba(255,255,255,0.03);padding-top:9px}
+.gtt-row:last-child{border-bottom:none}
+.gtt-rows-lbl{display:flex;flex-direction:column}
+.gtt-label{width:172px;padding:18px 12px 18px 0;display:flex;flex-direction:column;gap:2px;box-sizing:border-box;border-bottom:1px solid rgba(255,255,255,0.03);margin-left:-18px;padding-left:18px}
+.gtt-label:last-child{border-bottom:none}
+.gtt-num{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--t3)}
+.gtt-name{font-size:11.5px;font-weight:500;color:var(--t);line-height:1.3}
+.gtt-name.sys-dim{color:var(--t3)}
+.gtt-track{flex:1;position:relative;display:flex;flex-direction:column;padding-left:12px}
+.gtt-grid{position:absolute;left:12px;right:0;top:0;bottom:0;display:flex;pointer-events:none;z-index:0}
+.gtt-gc{flex:1;border-right:1px solid rgba(255,255,255,0.025)}
+.gtt-bar-wrap{position:relative;height:36px;flex-shrink:0;z-index:2}
+.gtt-bar{position:absolute;top:50%;transform:translateY(-50%);height:18px;border-radius:4px;display:flex;align-items:center;padding:0 7px;font-size:10px;font-weight:500;color:rgba(255,255,255,0.85);white-space:nowrap;overflow:hidden;cursor:default}
+.gtt-bar.sys-bar{background:transparent!important;border:1px dashed rgba(148,163,184,0.3)!important;color:var(--t3)}
+.gtt-out-wrap{position:relative;z-index:1;padding:0 0 18px}
+.gtt-out{display:flex;flex-direction:column;gap:3px}
+.gtt-bullet{font-size:11px;color:var(--t2);line-height:1.4;display:flex;gap:5px;align-items:center;white-space:nowrap}
+.gtt-bullet-dot{flex-shrink:0;color:var(--accent);font-size:10px}
+.gtt-chk{flex-shrink:0;display:inline-block;width:6px;height:3.5px;border-bottom:1px solid var(--accent);border-left:1px solid var(--accent);transform:rotate(-45deg);border-radius:0;margin-right:4px;margin-top:1px}
+.gtt-now{position:absolute;top:0;bottom:0;width:1px;background:rgba(20,184,166,0.4);z-index:5}
+.gantt-li{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--t2)}
+.gantt-ld{width:10px;height:6px;border-radius:2px}
+
+/* ── TEAM ── */
+.team-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.team-tag{background:var(--card2);border:1px solid var(--border);border-radius:4px;padding:3px 9px;font-size:11px;color:var(--t2)}
+.team-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.team-col-head{font-size:10px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.team-col-head.mine{color:var(--accent)}
+.team-col-head.theirs{color:var(--blue)}
+.team-roles{display:flex;flex-direction:column;gap:6px}
+.team-role{background:var(--card);border:1px solid var(--border);border-radius:7px;padding:12px 14px;display:flex;gap:10px;align-items:flex-start}
+.team-role-icon{width:30px;height:30px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--card2);border:1px solid var(--border);color:var(--t2)}
+.team-role-name{font-size:12.5px;font-weight:600;color:var(--t)}
+.team-role-desc{font-size:11.5px;color:var(--t2);margin-top:2px;line-height:1.4}
+.team-role-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
+.team-role-tag{background:rgba(59,130,246,0.07);border:1px solid rgba(59,130,246,0.15);border-radius:3px;padding:1px 6px;font-size:10px;color:var(--blue)}
+.team-divider{border:none;border-top:1px solid var(--border);margin:8px 0}
+.team-connect{margin-top:12px;padding:12px 14px;background:rgba(59,130,246,0.04);border:1px solid rgba(59,130,246,0.12);border-radius:7px}
+.team-connect-title{font-size:10px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:1px;color:var(--blue);margin-bottom:8px}
+.design-team{display:flex;gap:8px;flex-wrap:wrap}
+.design-role{background:var(--card2);border:1px solid var(--border);border-radius:4px;padding:4px 9px;font-size:11px;color:var(--t2)}
+.team-sep-label{font-size:10px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:1px;color:var(--t3);margin:14px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.team-panel-head{font-size:11px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.team-panel-head.left{color:#22d3ee}
+.team-panel-head.right{color:#a78bfa}
+.team-role-card{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;display:flex;align-items:flex-start;gap:10px}
+.team-role-icon-box{width:32px;height:32px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.team-role-card-name{font-size:12.5px;font-weight:600;color:var(--t);margin-bottom:5px}
+.team-role-cbullet{font-size:11px;color:var(--t2);line-height:1.5;display:flex;gap:5px}
+.team-role-cbullet::before{content:'·';color:var(--t3);flex-shrink:0}
+.team-core-card{background:rgba(20,184,166,0.05);border:1px solid rgba(20,184,166,0.18);border-radius:8px;padding:12px 14px;margin-bottom:8px}
+.team-core-head{font-size:10px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:1px;color:#14b8a6;margin-bottom:8px}
+.team-arrow-bullet{font-size:11.5px;color:var(--t2);display:flex;align-items:center;gap:7px;margin-bottom:4px}
+.team-arrow-bullet::before{content:'';display:inline-block;width:6px;height:3.5px;border-bottom:1px solid #14b8a6;border-left:1px solid #14b8a6;transform:rotate(-45deg);border-radius:0;flex-shrink:0}
+.team-sub-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.team-sub-card{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:11px 12px}
+.team-sub-card-head{font-size:11.5px;font-weight:600;color:var(--t);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.team-sub-cbullet{font-size:10.5px;color:var(--t2);line-height:1.5;display:flex;gap:5px}
+.team-sub-cbullet::before{content:'·';color:var(--t3);flex-shrink:0}
+.team-pm-card{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:11px 14px}
+.team-pm-head{font-size:11.5px;font-weight:600;color:var(--t);margin-bottom:5px;display:flex;align-items:center;gap:6px}
+.team-design-wrap{margin-top:16px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 18px}
+.team-design-head{font-size:10px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:1px;color:var(--accent);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.team-design-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.team-design-card{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:16px 14px;text-align:center}
+.team-design-card-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin:0 auto 10px}
+.team-design-card-name{font-size:12px;font-weight:600;color:var(--t);margin-bottom:4px}
+.team-design-card-desc{font-size:11px;color:var(--t3);line-height:1.35}
+
+/* ── SVG PERSON ICON ── */
+.person-svg{width:16px;height:16px;flex-shrink:0}
+
+/* ── OUTPUT 3-COL ── */
+.out-3col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:16px}
+.out-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:16px 18px}
+.out-card-tag{font-size:9px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:1.2px;color:var(--t3);margin-bottom:8px;padding-bottom:7px;border-bottom:1px solid var(--border)}
+.out-items{display:flex;flex-direction:column;gap:6px}
+.out-item{display:flex;gap:8px;align-items:flex-start;font-size:12px;color:var(--t2);line-height:1.4}
+
+/* ── CLIENT 3-COL ── */
+.client-section{margin-top:22px}
+.client-section-title{font-size:14px;font-weight:600;color:var(--t);margin-bottom:12px}
+.client-3col{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.client-card{background:var(--card);border:1px solid var(--border);border-radius:7px;padding:14px 16px}
+.client-num-sq{width:24px;height:24px;border-radius:5px;background:rgba(59,130,246,0.12);color:var(--blue);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;margin-bottom:9px}
+.client-card-text{font-size:12.5px;color:var(--t2);line-height:1.5}
+
+/* ── NEXT STEPS 3-COL ── */
+.ns-3wrap{position:relative;margin-top:20px}
+.ns-3col{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:0;align-items:flex-start}
+.ns-connector{display:flex;align-items:center;padding:0 8px;padding-top:18px}
+.ns-line{flex:1;height:1px;background:linear-gradient(90deg,rgba(20,184,166,0.3),rgba(59,130,246,0.3))}
+.ns-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:16px 18px}
+.ns-num-sq{width:28px;height:28px;border-radius:6px;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;flex-shrink:0;margin-bottom:10px;color:#fff}
+.ns-card-head{font-size:13px;font-weight:600;color:var(--t);margin-bottom:6px;line-height:1.3}
+.ns-card-text{font-size:12px;color:var(--t2);line-height:1.5}
+
+/* SCROLL PROG */
+.spb{position:fixed;top:0;left:var(--sb);right:0;height:2px;z-index:200}
+.spb-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--blue));width:0;transition:width .1s}
+
+@media(max-width:900px){
+  .tsg{grid-template-columns:1fr;grid-template-rows:auto}
+  .tsg-arrow{display:none}
+  .exec-grid,.out-3col,.client-3col{grid-template-columns:1fr}
+  .ns-3col{grid-template-columns:1fr;grid-template-rows:auto}
+  .ns-connector{display:none}
+  .team-grid{grid-template-columns:1fr}
+  .ecosystem{grid-template-columns:1fr!important}
+  .eco-arrows{display:none}
+  .future-grid{grid-template-columns:1fr}
+}
+</style>
+
+<style>
+/* ── ABOUT / FUTURE SECTIONS ── */
+.about-desc{font-size:14px;color:var(--t2);line-height:1.7;margin-bottom:4px}
+.about-sub{font-size:12.5px;color:var(--t3);line-height:1.6;display:flex;gap:6px}
+.about-sub::before{content:'—';color:var(--t3);flex-shrink:0}
+.about-bullets{display:flex;flex-direction:column;gap:4px;margin-top:10px}
+
+/* Ecosystem diagram */
+.ecosystem{display:grid;grid-template-columns:1fr 130px 1fr 130px 1fr;gap:0;margin-top:0;align-items:center}
+.eco-block{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px}
+.eco-block-center{border-color:rgba(20,184,166,0.25);background:rgba(20,184,166,0.03)}
+.eco-block-label{font-size:9.5px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:1.2px;color:var(--t3);margin-bottom:14px}
+.eco-name{font-size:15px;font-weight:700;color:var(--t);margin-bottom:14px}
+.eco-sub{background:var(--card2);border:1px solid var(--border);border-radius:7px;padding:10px 12px;margin-bottom:8px}
+.eco-sub-title{font-size:11.5px;font-weight:600;color:var(--t);margin-bottom:7px}
+.eco-sub-tags{display:flex;flex-wrap:wrap;gap:4px}
+.eco-tag{background:var(--card);border:1px solid var(--border);border-radius:4px;padding:2px 8px;font-size:10.5px;color:var(--t2)}
+.eco-arrows{display:flex;flex-direction:column;justify-content:center;gap:16px;padding:8px 10px}
+.eco-arrow{display:flex;flex-direction:column;align-items:center;gap:6px}
+.eco-arrow-lbl{font-size:9px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:0.6px;color:var(--t3);text-align:center;line-height:1.35}
+.eco-arrow-sym{font-size:18px;color:var(--t3);line-height:1}
+
+/* Goal cards (about section) */
+.goal-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.goal-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px 16px;display:flex;align-items:center;gap:12px}
+.goal-card-icon{width:32px;height:32px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.goal-card-text{font-size:12.5px;font-weight:500;color:var(--t);line-height:1.3}
+</style>
+</head>
+<body>
+<div class="spb"><div class="spb-fill" id="spb"></div></div>
+
+<!-- SIDEBAR -->
+<aside class="sb">
+  <div class="sb-head">
+    <div class="sb-name">ProHealth</div>
+    <div class="sb-sub">Аудит и модель создания продукта</div>
+  </div>
+  <nav class="sb-nav">
+    <a class="sbi on" href="#about" onclick="sa(this)"><span class="d"></span>Что такое ProHealth</a>
+    <a class="sbi" href="#ecosystem" onclick="sa(this)"><span class="d"></span>Схема продукта</a>
+    <a class="sbi" href="#future" onclick="sa(this)"><span class="d"></span>Продукт будущего</a>
+    <a class="sbi" href="#model" onclick="sa(this)"><span class="d"></span>Модель создания продукта</a>
+    <a class="sbi" href="#risks" onclick="sa(this)"><span class="d"></span>Риски создания MVP</a>
+    <a class="sbi" href="#timeline" onclick="sa(this)"><span class="d"></span>Таймлайн и результаты</a>
+    <a class="sbi" href="#team" onclick="sa(this)"><span class="d"></span>Команда продукта</a>
+    <a class="sbi" href="#output" onclick="sa(this)"><span class="d"></span>Что будет на выходе</a>
+  </nav>
+  <div style="padding:14px;border-top:1px solid var(--border);flex-shrink:0">
+    <div style="font-size:10px;color:var(--t3)">Артём Галиновский для ProHealth</div>
+  </div>
+</aside>
+
+<main class="main">
+
+<!-- HERO -->
+<div class="hero" id="hero">
+  <div class="hero-wrap">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;min-height:300px;display:flex;align-items:center;justify-content:center;padding:48px 40px;width:100%;box-sizing:border-box">
+      <div class="h-name" style="text-align:center"><span style="color:var(--accent)">ProHealth.</span> Продуктовый аудит + системная сборка проекта.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ЧТО ТАКОЕ PROHEALTH -->
+<div class="sec" id="about">
+  <div class="wrap">
+    <div class="sec-icon-row" style="margin-bottom:16px">
+      <div class="sec-icon" style="background:rgba(20,184,166,0.1)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#14b8a6" stroke-width="2" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      </div>
+      <div class="sec-title">ProHealth — это цифровая экосистема<br>персонального тренинга и сопровождения здоровья</div>
+    </div>
+    <div class="goal-cards">
+      <div class="goal-card">
+        <div class="goal-card-icon" style="background:rgba(59,130,246,0.1);color:var(--blue)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        </div>
+        <div class="goal-card-text">Персонализированные тренировки</div>
+      </div>
+      <div class="goal-card">
+        <div class="goal-card-icon" style="background:rgba(20,184,166,0.1);color:var(--accent)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        </div>
+        <div class="goal-card-text">Медицинское сопровождение</div>
+      </div>
+      <div class="goal-card">
+        <div class="goal-card-icon" style="background:rgba(34,197,94,0.1);color:#22c55e">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+        </div>
+        <div class="goal-card-text">Питание</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- СХЕМА ПРОДУКТА -->
+<div class="sec" id="ecosystem">
+  <div class="wrap">
+    <div class="sec-icon-row" style="margin-bottom:16px">
+      <div class="sec-icon" style="background:rgba(20,184,166,0.1)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#14b8a6" stroke-width="2" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      </div>
+      <div>
+        <div class="sec-title" style="margin-bottom:4px">Схема продукта</div>
+        <div class="sec-sub-sm">Персонализация на стыке пользовательского контекста, экспертной логики и валидации.</div>
+      </div>
+    </div>
+    <!-- ECOSYSTEM DIAGRAM -->
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px">
+    <div class="ecosystem">
+      <!-- ПРОДУКТ -->
+      <div class="eco-block">
+        <div class="eco-name">Продукт</div>
+        <div class="eco-sub">
+          <div class="eco-sub-title">Экспертный контур</div>
+          <div class="eco-sub-tags">
+            <span class="eco-tag">Врач</span>
+            <span class="eco-tag">Тренер</span>
+            <span class="eco-tag">Нутрициолог</span>
+          </div>
+        </div>
+        <div class="eco-sub">
+          <div class="eco-sub-title">База + AI</div>
+          <div class="eco-sub-tags">
+            <span class="eco-tag">База знаний</span>
+            <span class="eco-tag">Data model</span>
+            <span class="eco-tag">Recommendation</span>
+            <span class="eco-tag">Персональные генерации</span>
+          </div>
+        </div>
+      </div>
+      <!-- ARROWS: ПРОДУКТ ↔ ИНТЕРФЕЙС -->
+      <div class="eco-arrows">
+        <div class="eco-arrow">
+          <div class="eco-arrow-lbl" style="color:var(--accent)">Экспертные<br>фильтры</div>
+          <div class="eco-arrow-sym" style="color:var(--accent)">→</div>
+        </div>
+        <div class="eco-arrow">
+          <div class="eco-arrow-sym" style="color:var(--accent)">→</div>
+          <div class="eco-arrow-lbl" style="color:var(--accent)">Доверенная<br>база</div>
+        </div>
+      </div>
+      <!-- ИНТЕРФЕЙС -->
+      <div class="eco-block" style="align-self:center">
+        <div class="eco-name">Интерфейс</div>
+        <div class="eco-sub">
+          <div class="eco-sub-title">Мобайл / веб-интерфейс</div>
+          <div class="eco-sub-tags">
+            <span class="eco-tag">Expert-side</span>
+            <span class="eco-tag">Client-side</span>
+          </div>
+        </div>
+      </div>
+      <!-- ARROWS: ИНТЕРФЕЙС ↔ ПОЛЬЗОВАТЕЛЬ -->
+      <div class="eco-arrows">
+        <div class="eco-arrow">
+          <div class="eco-arrow-lbl" style="color:var(--accent)">Персональный<br>результат</div>
+          <div class="eco-arrow-sym" style="color:var(--accent)">→</div>
+        </div>
+        <div class="eco-arrow">
+          <div class="eco-arrow-sym" style="color:var(--accent)">←</div>
+          <div class="eco-arrow-lbl" style="color:var(--accent)">Пользовательские<br>фильтры</div>
+        </div>
+      </div>
+      <!-- ПОЛЬЗОВАТЕЛЬ -->
+      <div class="eco-block">
+        <div class="eco-name">Пользователь</div>
+        <div class="eco-sub">
+          <div class="eco-sub-title">Получает</div>
+          <div class="eco-sub-tags">
+            <span class="eco-tag">Персональный результат</span>
+          </div>
+        </div>
+        <div class="eco-sub">
+          <div class="eco-sub-title">Передаёт</div>
+          <div class="eco-sub-tags">
+            <span class="eco-tag">Фильтры</span>
+            <span class="eco-tag">Контекст</span>
+            <span class="eco-tag">Цель</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div><!-- /outer card -->
+  </div>
+</div>
+
+<!-- ПОЧЕМУ ЭТО ПРОДУКТ БУДУЩЕГО -->
+<div class="sec" id="future">
+  <div class="wrap">
+    <div class="sec-icon-row" style="margin-bottom:16px">
+      <div class="sec-icon" style="background:rgba(245,158,11,0.1)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </div>
+      <div class="sec-title">Почему в моих глазах это продукт будущего, и я в него верю</div>
+    </div>
+    <div class="tsg">
+      <!-- Полярный мир -->
+      <div class="tsg-col">
+        <div class="tsg-label-row">
+          <div class="tsg-icon-sq" style="background:rgba(100,116,139,0.12);border:1px solid rgba(100,116,139,0.2)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          </div>
+          <div class="tsg-col-title">Полярный мир</div>
+        </div>
+        <div class="tsg-head">Два пути развития рынка</div>
+        <div class="bullet-list">
+          <div class="bl-item">Массовые автоматизированные решения по подписке (AI-корпорации)</div>
+          <div class="bl-item">Доверенные системы с методологией, экспертностью и ответственностью (бизнес)</div>
+        </div>
+      </div>
+      <div class="tsg-arrow"><div class="tsg-arrow-svg">→</div></div>
+      <!-- Вторая траектория -->
+      <div class="tsg-col sol">
+        <div class="tsg-label-row">
+          <div class="tsg-icon-sq" style="background:rgba(59,130,246,0.12);border:1px solid rgba(59,130,246,0.2)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+          <div class="tsg-col-title">ProHealth — продукт будущего</div>
+        </div>
+        <div class="tsg-head">Не автоматизация, а доверие</div>
+        <div class="bullet-list">
+          <div class="bl-item">Проверенная база</div>
+          <div class="bl-item">Персонализация (в будущем + AI)</div>
+          <div class="bl-item">Экспертная валидация и контроль</div>
+        </div>
+      </div>
+      <div class="tsg-arrow"><div class="tsg-arrow-svg">→</div></div>
+      <!-- Вектор роста -->
+      <div class="tsg-col goal">
+        <div class="tsg-label-row">
+          <div class="tsg-icon-sq" style="background:rgba(20,184,166,0.12);border:1px solid rgba(20,184,166,0.2)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#14b8a6" stroke-width="2" stroke-linecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+          </div>
+          <div class="tsg-col-title">Вектор роста</div>
+        </div>
+        <div class="tsg-head">ProHealth OS</div>
+        <div class="bullet-list">
+          <div class="bl-item">Потенциал роста в экосистему ProHealth OS — единый персональный контур управления здоровьем, телом и физическим состоянием в мире будущего</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ПРОДУКТОВАЯ МОДЕЛЬ -->
+
+<div class="sec" id="model">
+  <div class="wrap">
+    <div class="sec-icon-row">
+      <div class="sec-icon" style="background:rgba(20,184,166,0.1)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#14b8a6" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+      </div>
+      <div>
+        <div class="sec-title-big">Модель создания продукта</div>
+        <div class="sec-sub-sm">Слои выстроены в определённую последовательность — так они складываются в закономерную и понятную систему движения к MVP.</div>
+        <div class="sec-hint">Нажмите на слой — каждый содержит подробный разбор</div>
+      </div>
+    </div>
+    <div class="acc" id="acc"></div>
+  </div>
+</div>
+
+
+<!-- РИСКИ -->
+<div class="sec" id="risks">
+  <div class="wrap">
+    <div class="sec-icon-row">
+      <div class="sec-icon" style="background:rgba(239,68,68,0.1)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      </div>
+      <div>
+        <div class="sec-title-big">Риски создания MVP без системной продуктовой рамки</div>
+      </div>
+    </div>
+    <div class="risks-list" id="risks-list"></div>
+  </div>
+</div>
+
+<!-- ТАЙМЛАЙН -->
+<div class="sec" id="timeline">
+  <div class="wrap">
+    <div class="sec-icon-row">
+      <div class="sec-icon" style="background:rgba(59,130,246,0.1)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      </div>
+      <div>
+        <div class="sec-title-big">Таймлайн и результаты</div>
+        <div class="sec-sub-sm">Оценочная продолжительность до MVP: 26–27 недель при последовательном движении по слоям</div>
+      </div>
+    </div>
+    <div class="gantt-wrap" style="display:flex">
+      <div id="gantt-labels" style="flex-shrink:0;padding:0 0 18px 18px;background:#111d30;z-index:2;position:relative;border-right:1px solid rgba(255,255,255,0.04)"></div>
+      <div class="gantt-scroll" id="gantt" style="flex:1;padding-left:0;padding-bottom:60px"></div>
+      <div style="position:absolute;bottom:18px;right:18px;display:flex;align-items:center;gap:14px;background:#111d30;padding:8px 14px;border-radius:6px;border:1px solid var(--border);z-index:20">
+        <div class="gantt-li"><div class="gantt-ld" style="background:var(--accent)"></div>Завершено</div>
+        <div class="gantt-li"><div class="gantt-ld" style="background:var(--a)"></div>В процессе</div>
+        <div class="gantt-li"><div class="gantt-ld" style="background:rgba(100,116,139,0.4)"></div>Плановое</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- КОМАНДА ПРОДУКТА -->
+<div class="sec" id="team">
+  <div class="wrap">
+    <div class="sec-icon-row">
+      <div class="sec-icon" style="background:rgba(124,58,237,0.1)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <div>
+        <div class="sec-title-big">Команда продукта</div>
+      </div>
+    </div>
+    <div class="team-grid">
+      <!-- LEFT: Product Owner / Product Strategy / Algorithms слой -->
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 18px">
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div class="team-role-card">
+            <div class="team-role-icon-box" style="background:rgba(34,211,238,0.1);color:#22d3ee">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>
+            </div>
+            <div>
+              <div class="team-role-card-name">Антон — Product Owner</div>
+              <div style="display:flex;flex-direction:column;gap:1px">
+                <div class="team-role-cbullet">принимает ключевые продуктовые решения</div>
+                <div class="team-role-cbullet">задаёт общий вектор развития продукта</div>
+                <div class="team-role-cbullet">определяет приоритеты</div>
+                <div class="team-role-cbullet">валидирует стратегические решения</div>
+              </div>
+            </div>
+          </div>
+          <div class="team-role-card">
+            <div class="team-role-icon-box" style="background:rgba(59,130,246,0.1);color:var(--blue)">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            </div>
+            <div>
+              <div class="team-role-card-name">Engineering / Tech Lead</div>
+              <div style="display:flex;flex-direction:column;gap:1px">
+                <div class="team-role-cbullet">архитектура системы и data model</div>
+                <div class="team-role-cbullet">логика рекомендаций и интеграции</div>
+                <div class="team-role-cbullet">техническая реализация и качество системы</div>
+              </div>
+            </div>
+          </div>
+          <div class="team-role-card">
+            <div class="team-role-icon-box" style="background:rgba(34,197,94,0.1);color:#22c55e">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+            </div>
+            <div>
+              <div class="team-role-card-name">Sport / Methodology контур</div>
+              <div style="display:flex;flex-direction:column;gap:1px">
+                <div class="team-role-cbullet">упражнения и спортивная корректность</div>
+                <div class="team-role-cbullet">методология тренировочного процесса</div>
+                <div class="team-role-cbullet">профильный контент продукта</div>
+              </div>
+            </div>
+          </div>
+          <div class="team-role-card">
+            <div class="team-role-icon-box" style="background:rgba(167,139,250,0.1);color:#a78bfa">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+            </div>
+            <div>
+              <div class="team-role-card-name">Product Strategy / Algorithms контур</div>
+              <div style="display:flex;flex-direction:column;gap:1px">
+                <div class="team-role-cbullet">platform logic · системная концепция</div>
+                <div class="team-role-cbullet">алгоритмы · общая логика продукта</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- RIGHT: Product Market / Experience слой — Артём -->
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 18px">
+        <!-- Core Responsibilities -->
+        <div class="team-core-card">
+          <div class="team-core-head">Артём — зона ответственности</div>
+          <div class="team-arrow-bullet">переводит vision в зафиксированные продуктовые решения</div>
+          <div class="team-arrow-bullet">собирает проект в целостную продуктовую систему</div>
+          <div class="team-arrow-bullet">устраняет разрывы между vision, логикой, UX, дизайном и MVP</div>
+          <div class="team-arrow-bullet">отвечает за целостность и качество финального решения</div>
+        </div>
+        <!-- Market Owner + Experience Owner -->
+        <div class="team-sub-grid">
+          <div class="team-sub-card">
+            <div class="team-sub-card-head">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              <span style="color:var(--t)">Market Owner</span>
+            </div>
+            <div class="team-sub-cbullet">Strategy / Market</div>
+            <div class="team-sub-cbullet">целевые ICP и JTBD</div>
+            <div class="team-sub-cbullet">анализ конкурентов</div>
+            <div class="team-sub-cbullet">Product Value, УТП</div>
+          </div>
+          <div class="team-sub-card">
+            <div class="team-sub-card-head">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+              <span style="color:var(--t)">Experience Owner</span>
+            </div>
+            <div class="team-sub-cbullet">Product Definition</div>
+            <div class="team-sub-cbullet">UX Concept</div>
+            <div class="team-sub-cbullet">Client/Expert-side UX</div>
+            <div class="team-sub-cbullet">Visual Direction</div>
+          </div>
+        </div>
+        <!-- Project Management -->
+        <div class="team-pm-card">
+          <div class="team-pm-head">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3" cy="6" r="1" fill="var(--blue)"/><circle cx="3" cy="12" r="1" fill="var(--blue)"/><circle cx="3" cy="18" r="1" fill="var(--blue)"/></svg>
+            <span>Project Management</span>
+          </div>
+          <div style="font-size:11px;color:var(--t2);line-height:1.5">Управление design-контуром, удержание логики и качества прохождения этапов, координация специалистов в рамках общей продуктовой рамки</div>
+        </div>
+        <!-- Design-команда — внутри правой колонки -->
+        <div style="background:rgba(167,139,250,0.04);border:1px solid rgba(167,139,250,0.15);border-radius:8px;padding:12px 14px;margin-top:8px">
+          <div class="team-design-head" style="margin-bottom:10px">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="4.93" y1="4.93" x2="9.17" y2="9.17"/><line x1="14.83" y1="14.83" x2="19.07" y2="19.07"/><line x1="14.83" y1="9.17" x2="19.07" y2="4.93"/><line x1="4.93" y1="19.07" x2="9.17" y2="14.83"/></svg>
+            Подключаемая design-команда
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div class="team-design-card" style="text-align:left;display:flex;align-items:center;gap:12px;padding:10px 12px">
+              <div class="team-design-card-icon" style="background:rgba(20,184,166,0.12);color:#14b8a6;margin:0;flex-shrink:0">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>
+              </div>
+              <div>
+                <div class="team-design-card-name" style="text-align:left">Senior UX/UI Designer</div>
+                <div class="team-design-card-desc" style="text-align:left">Подключается на этапах: User Flows · Prototype Validation · Design Production</div>
+              </div>
+            </div>
+            <div class="team-design-card" style="text-align:left;display:flex;align-items:center;gap:12px;padding:10px 12px">
+              <div class="team-design-card-icon" style="background:rgba(59,130,246,0.12);color:var(--blue);margin:0;flex-shrink:0">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </div>
+              <div>
+                <div class="team-design-card-name" style="text-align:left">Middle/Senior Designers</div>
+                <div class="team-design-card-desc" style="text-align:left">По необходимости под задачи этапа</div>
+              </div>
+            </div>
+            <div class="team-design-card" style="text-align:left;display:flex;align-items:center;gap:12px;padding:10px 12px">
+              <div class="team-design-card-icon" style="background:rgba(167,139,250,0.12);color:#a78bfa;margin:0;flex-shrink:0">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </div>
+              <div>
+                <div class="team-design-card-name" style="text-align:left">Дополнительные специалисты</div>
+                <div class="team-design-card-desc" style="text-align:left">Motion, 3D, Data Viz, Content — по необходимости</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ЧТО БУДЕТ НА ВЫХОДЕ -->
+<div class="sec" id="output">
+  <div class="wrap">
+    <div class="sec-icon-row">
+      <div class="sec-icon" style="background:rgba(20,184,166,0.1)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#14b8a6" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      </div>
+      <div>
+        <div class="sec-title-big">Что будет на выходе</div>
+      </div>
+    </div>
+    <div class="out-3col">
+      <div class="out-card">
+        <div style="font-size:9.5px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:1px;color:var(--accent);margin-bottom:6px">Где мы сейчас</div>
+        <div class="tsg-head" style="margin-bottom:12px">Product Audit завершён</div>
+        <div class="out-items">
+          <div class="out-item"><span class="bico bico-d">✓</span>зафиксирована master map продукта и процесса его сборки</div>
+          <div class="out-item"><span class="bico bico-d">✓</span>зафиксировано, что уже есть в проекте</div>
+          <div class="out-item"><span class="bico bico-d">✓</span>зафиксировано, чего не хватает и где остаются разрывы</div>
+          <div class="out-item"><span class="bico bico-d">✓</span>определена логика и последовательность следующих этапов работы</div>
+          <div class="out-item"><span class="bico bico-d">✓</span>сформирована системная рамка, на основе которой можно запускать дальнейшую сборку продукта</div>
+        </div>
+      </div>
+      <div class="out-card">
+        <div style="font-size:9.5px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:1px;color:var(--blue);margin-bottom:6px">Что будет сделано</div>
+        <div class="tsg-head" style="margin-bottom:12px">Полный перечень результатов</div>
+        <div class="out-items">
+          <div class="out-item"><span class="bico bico-d">✓</span>зафиксированная Strategy / Market рамка продукта</div>
+          <div class="out-item"><span class="bico bico-d">✓</span>зафиксированный Product Definition / рамка продукта</div>
+          <div class="out-item"><span class="bico bico-d">✓</span>зафиксированные целевые ICP и их приоритет</div>
+          <div class="out-item"><span class="bico bico-d">✓</span>зафиксированные JTBD по целевым ICP</div>
+          <div class="out-item"><span class="bico bico-d">✓</span>зафиксированное Product Value</div>
+          <div class="out-item"><span class="bico bico-d">✓</span>зафиксированное УТП и позиционирование</div>
+          <div class="out-item"><span class="bico bico-d">✓</span>зафиксированный client-side UX concept</div>
+          <div class="out-item"><span class="bico bico-d">✓</span>зафиксированный expert-side UX concept</div>
+          <div class="out-item"><span class="bico bico-d">✓</span>зафиксированные client-side user flows</div>
+          <div class="out-item"><span class="bico bico-d">✓</span>зафиксированные expert-side user flows</div>
+          <div class="out-item"><span class="bico bico-d">✓</span>зафиксированная Information Architecture</div>
+          <div class="out-item"><span class="bico bico-d">✓</span>зафиксированный Visual Direction</div>
+          <div class="out-item"><span class="bico bico-d">✓</span>production-ready client-side design</div>
+          <div class="out-item"><span class="bico bico-d">✓</span>production-ready expert-side design</div>
+          <div class="out-item"><span class="bico bico-d">✓</span>production-ready дизайн документов, отчётов, результатов анализов и экспертных заключений</div>
+        </div>
+      </div>
+      <div class="out-card">
+        <div style="font-size:9.5px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:1px;color:#a78bfa;margin-bottom:6px">К чему придём</div>
+        <div class="tsg-head" style="margin-bottom:12px">MVP / First Working Version</div>
+        <div class="out-items">
+          <div class="out-item"><span class="bico bico-d">✓</span>первая рабочая версия продукта</div>
+          <div class="out-item"><span class="bico bico-d">✓</span>собрана на зафиксированной продуктовой логике, а не на внутренних предположениях</div>
+          <div class="out-item"><span class="bico bico-d">✓</span>первый пилот с представителями приоритетных ICP</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</main>
+
+<script>
+// ═══════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════
+const LAYERS = [
+{
+  id:0, num:'00',
+  name:'Product Audit + системная продуктовая сборка проекта',
+  short:'Оценить текущее состояние и собрать целостную системную картину продукта',
+  why:'Это основа, на которой уже можно последовательно и обоснованно двигаться к MVP.',
+  status:'done', dur:'завершено', progress:100,
+  items:[
+    {name:'Оценка текущего состояния по существующим материалам', status:'done', notes:[
+      {s:'g',t:'Собраны и проанализированы все материалы: vision, ТЗ, концепция, rough screens'},
+      {s:'g',t:'По каждому продуктовому слою зафиксированы: текущий статус, что частично есть, чего нет полностью'},
+    ]},
+    {name:'Зафиксировано, что в проекте есть, чего не хватает, где разрывы', status:'done', notes:[
+      {s:'g',t:'Полная карта текущего состояния по каждому слою продуктовой модели'},
+    ]},
+    {name:'Зафиксирована системная карта продукта', status:'done', notes:[
+      {s:'g',t:'Как продукт должен быть устроен, что необходимо сделать и в какой последовательности двигаться'},
+    ]},
+    {name:'Зафиксированы ключевые продуктовые слои на пути к MVP', status:'done', notes:[
+      {s:'g',t:'Strategy / Market → Product Definition → UX Concept → User Flows / IA → Prototype Validation → Visual Direction → Design Production → MVP'},
+    ]},
+    {name:'Предложена обоснованная логика дальнейшей работы над продуктом', status:'done', notes:[
+      {s:'g',t:'Каждый следующий этап обоснован — понятно, зачем он нужен и почему без него невозможно двигаться дальше'},
+    ]},
+  ]
+},
+{
+  id:1, num:'01',
+  name:'Strategy / Market',
+  short:'Этап, на котором определяется, для кого создаётся продукт, какую задачу решает и почему должен существовать на рынке',
+  why:'Без этого дальше невозможно обоснованно принимать продуктовые решения — остаётся неясно, для кого именно собирается продукт. Вся дальнейшая master map опирается на зафиксированный Strategy / Market.',
+  status:'partial', dur:'1–2 недели', progress:10,
+  items:[
+    {name:'Целевые ICP и их приоритет', status:'partial', notes:[
+      {s:'g',t:'Есть общее понимание аудитории продукта'},
+      {s:'r',t:'Нет чёткой сегментации, приоритета и выбора целевых ICP для продукта и первой версии'},
+    ]},
+    {name:'Job to be done по целевым ICP', status:'partial', notes:[
+      {s:'g',t:'Есть понимание задач пользователя на уровне гипотез'},
+      {s:'r',t:'Гипотезы не привязаны к конкретным целевым ICP и не расставлены по приоритету'},
+    ]},
+    {name:'Боли, барьеры, триггеры входа', status:'partial', notes:[
+      {s:'g',t:'Отдельные барьеры и опасения считываются из логики продукта'},
+      {s:'r',t:'Не собраны в явную market-рамку'},
+    ]},
+    {name:'Критерии выбора и форматы доверия', status:'partial', notes:[
+      {s:'g',t:'Есть гипотеза: доверие строится через экспертов, data model, ограничения и проверенные источники'},
+      {s:'r',t:'Не зафиксировано как market-основание выбора'},
+    ]},
+    {name:'Анализ конкурентов и альтернатив', status:'missing', notes:[
+      {s:'r',t:'Отсутствует понимание альтернатив и рыночного контекста'},
+      {s:'r',t:'Не зафиксировано, с чем продукт будет сравниваться пользователем'},
+    ]},
+    {name:'Ценность продукта', status:'partial', notes:[
+      {s:'g',t:'Есть гипотеза ценности'},
+      {s:'r',t:'Не зафиксирована как чёткая формулировка для конкретных целевых ICP'},
+    ]},
+    {name:'Reason to believe / основание доверия', status:'partial', notes:[
+      {s:'g',t:'Есть отдельные основания доверия'},
+      {s:'r',t:'Не собраны в связную систему аргументов для конкретных ICP'},
+    ]},
+    {name:'УТП, позиционирование', status:'missing', notes:[
+      {s:'r',t:'Есть намёк на отличие через связку персонализации, экспертного слоя и доверенной логики'},
+      {s:'r',t:'УТП не сформулировано, позиционирование не определено'},
+    ]},
+  ]
+},
+{
+  id:2, num:'02',
+  name:'Product Definition',
+  short:'Верхнеуровневое определение продукта: что представляет собой ProHealth, что входит в MVP и каковы рамки продукта',
+  why:'Без Strategy / Market его нельзя собрать корректно — без зафиксированных ICP и JTBD невозможно определить, что именно должно входить в продукт и что в нём является приоритетным.',
+  status:'partial', dur:'2–3 недели', progress:25,
+  items:[
+    {name:'Product Value / ключевая ценность', status:'done', notes:[
+      {s:'g',t:'Базовая формулировка Product Value присутствует: экосистема персонального тренинга и сопровождения здоровья'},
+      {s:'g',t:'Достижение физической цели через персонализированные тренировки, медицинское сопровождение и питание как инструменты ускорения результата и безопасности'},
+    ]},
+    {name:'Формат существования продукта', status:'done', notes:[
+      {s:'g',t:'Задан формат mobile / web для client-side и expert-side'},
+    ]},
+    {name:'Состав client-side и expert-side ролей', status:'done', notes:[
+      {s:'g',t:'Определены: пользователь, спортивный врач, тренер, нутрициолог, администратор'},
+    ]},
+    {name:'Business Goals', status:'done', notes:[
+      {s:'g',t:'Обозначены: вовлечённость пользователей, формирование пользовательской базы, подписочная модель, дополнительные сервисы'},
+    ]},
+    {name:'Как определён продукт', status:'partial', notes:[
+      {s:'g',t:'Есть vision, ТЗ, концепция и rough screens. Продукт задан как digital health / training система для client-side и expert-side'},
+      {s:'r',t:'Не собрано в единое зафиксированное определение продукта на основе Strategy / Market'},
+    ]},
+    {name:'Expert-side рамка продукта', status:'partial', notes:[
+      {s:'g',t:'Базовая expert-side рамка считывается: врач за запреты и ограничения, тренер за нагрузку и корректировки, нутрициолог за питание и БАДы, администратор за техническое управление'},
+      {s:'r',t:'Не зафиксировано: как эксперт реально работает внутри продукта, что ему критично видеть первым, где конкретно он подключается в цикл взаимодействия'},
+      {s:'r',t:'Какие данные / файлы / документы эксперт использует. Что именно пользователь видит как результат участия эксперта. Что из этого обязательно входит в MVP'},
+    ]},
+    {name:'MVP: состав, границы и критерии успеха', status:'partial', notes:[
+      {s:'g',t:'Есть предварительное представление о первой версии продукта — считывается из ТЗ, концепции и rough screens'},
+      {s:'r',t:'Не зафиксировано как согласованное решение по составу MVP, его границам и критериям успеха'},
+      {s:'r',t:'Не зафиксировано, что сознательно не входит в текущую рамку продукта'},
+      {s:'r',t:'Не зафиксировано, какие Business Goals закрывает именно MVP, а какие относятся к следующим версиям'},
+    ]},
+  ]
+},
+{
+  id:3, num:'03',
+  name:'System / Tech Logic',
+  short:'Как продукт работает как система: данные, логика рекомендаций, участие экспертов, статусы, результаты и точки доступа',
+  why:'Чтобы понять, на какой системной логике держится продукт и как она должна поддерживать пользовательский опыт. Системный слой участвует в общем процессе, но реализуется командой продукта отдельно.',
+  status:'partial', dur:'2–3 недели', progress:40,
+  items:[
+    {name:'Data Model (логически описана)', status:'done', notes:[
+      {s:'g',t:'Определены упражнения, программы, цели, эффекты, ограничения и профили пользователя'},
+      {s:'g',t:'Определено, как эти объекты связаны между собой'},
+    ]},
+    {name:'Data Layer / единый банк данных', status:'partial', notes:[
+      {s:'g',t:'Заложен в концепции'},
+      {s:'r',t:'Статус технической реализации в backend по текущим материалам не подтверждён'},
+    ]},
+    {name:'Personalization / Recommendation Layer', status:'partial', notes:[
+      {s:'g',t:'Логика подбора описана: учитываются цель, контекст, оборудование, локация, ограничения, рекомендации'},
+      {s:'r',t:'Не определено, как эта логика должна проявляться в интерфейсе и пользовательских сценариях'},
+    ]},
+    {name:'Expert Layer', status:'partial', notes:[
+      {s:'g',t:'Роли экспертов и их влияние на систему описаны — влияют на рекомендации, запреты и корректировки'},
+      {s:'r',t:'Не определено, в каких точках продуктового цикла эксперты подключаются и что происходит в этих точках'},
+    ]},
+    {name:'Analytics / Reporting Layer', status:'partial', notes:[
+      {s:'g',t:'Заложено, что система формирует прогресс, health index, статусы, отчёты и аналитику'},
+      {s:'r',t:'Итоговый состав показателей, статусов, отчётов и аналитики не зафиксирован'},
+    ]},
+    {name:'Interface Layer — пользовательский контур', status:'partial', notes:[
+      {s:'g',t:'Намечен пользовательский контур: rough screens и базовый набор экранов'},
+      {s:'r',t:'Экспертный контур интерфейса не собран'},
+      {s:'r',t:'Не определено, как системные слои собираются в целостное взаимодействие'},
+    ]},
+    {name:'Встраивание системной логики в продуктовые сценарии', status:'missing', notes:[
+      {s:'r',t:'Не определено, как конкретно System / Tech Logic встраивается в пользовательские сценарии и точки взаимодействия'},
+    ]},
+  ]
+},
+{
+  id:4, num:'04',
+  name:'UX Concept',
+  short:'Модель опыта взаимодействия с продуктом для выбранных ICP, их JTBD и expert-side ролей внутри системы',
+  why:'Без Product Definition его нельзя собрать корректно — без зафиксированной рамки продукта остаётся неясно, какой именно опыт вообще проектируется. Чтобы собирать не набор экранов, а цельный опыт.',
+  status:'partial', dur:'2–3 недели', progress:20,
+  items:[
+    {name:'Состав участников взаимодействия', status:'done', notes:[
+      {s:'g',t:'Определены: пользователь, система / алгоритм / ИИ, спортивный врач, тренер, нутрициолог, администратор'},
+    ]},
+    {name:'Client-side UX Concept', status:'partial', notes:[
+      {s:'g',t:'Есть rough screens и общее представление о клиентском контуре'},
+      {s:'r',t:'Не собрана модель клиентского опыта под конкретные ICP / JTBD'},
+    ]},
+    {name:'Идея доверенного продукта', status:'partial', notes:[
+      {s:'g',t:'Есть роль экспертов и роль системы / рекомендаций как основа доверия'},
+      {s:'r',t:'Механики доверия под конкретные ICP не собраны'},
+      {s:'r',t:'Не зафиксировано, через что и в каких точках возникает доверие'},
+    ]},
+    {name:'Модель взаимодействия системы / эксперта / пользователя', status:'partial', notes:[
+      {s:'g',t:'Понятно, что есть автоматика и что есть экспертный контур'},
+      {s:'r',t:'Конкретные точки взаимодействия не зафиксированы'},
+      {s:'r',t:'Единая полная карта взаимодействия не собрана'},
+    ]},
+    {name:'Expert-side UX Concept', status:'missing', notes:[
+      {s:'r',t:'Не собрана модель экспертного опыта для выбранных expert-side roles / profiles и их задач внутри системы'},
+    ]},
+    {name:'ICP / JTBD и expert-side roles / tasks как основа UX-решений', status:'missing', notes:[
+      {s:'r',t:'Client-side ICP / JTBD и expert-side roles / tasks не зафиксированы как основа для UX-решений'},
+      {s:'r',t:'Нет зафиксированного Product Definition как обязательного входа'},
+    ]},
+  ]
+},
+{
+  id:5, num:'05',
+  name:'User Flows / Information Architecture',
+  short:'Детальная логика сценариев, экранов, переходов, состояний и точек взаимодействия между пользователем, системой и экспертами',
+  why:'Без UX Concept их нельзя собрать корректно — без модели опыта остаются неясны логика взаимодействия, последовательность шагов и структура самого пути.',
+  status:'missing', dur:'2–3 недели', progress:5,
+  items:[
+    {name:'Client-side черновик', status:'partial', notes:[
+      {s:'g',t:'Есть rough screens и набор экранных гипотез'},
+      {s:'r',t:'Основаны на vision и предварительной логике, а не на зафиксированных ICP / JTBD'},
+    ]},
+    {name:'Expert-side черновик', status:'partial', notes:[
+      {s:'g',t:'Есть предварительное понимание задач экспертов'},
+      {s:'r',t:'Сквозные сценарии экспертного контура не собраны'},
+    ]},
+    {name:'Сквозные client-side user flows', status:'missing', notes:[
+      {s:'r',t:'Логика движения пользователя по клиентскому контуру не зафиксирована'},
+      {s:'r',t:'Шаги, развилки, решения, проверки, подключение эксперта — не определены'},
+    ]},
+    {name:'Сквозные expert-side user flows', status:'missing', notes:[
+      {s:'r',t:'Логика движения эксперта: какие шаги проходит, что видит, что проверяет, что подтверждает, где влияет на сценарий пользователя — не собрана'},
+    ]},
+    {name:'Целостная Information Architecture', status:'missing', notes:[
+      {s:'r',t:'Как между собой связаны сценарии, точки взаимодействия, client-side / expert-side, экраны и навигация — не определено'},
+    ]},
+    {name:'Полная карта состояний', status:'missing', notes:[
+      {s:'r',t:'Состояния экранов (нет данных / есть / загрузка / ошибка / завершено) — не зафиксированы'},
+      {s:'r',t:'Состояния данных (нет / есть / недостаточно / устарели / на проверке / подтверждены) — не зафиксированы'},
+      {s:'r',t:'Состояния решений (выдана / требует валидации / подтверждена / ограничена) — не зафиксированы'},
+    ]},
+  ]
+},
+{
+  id:6, num:'06',
+  name:'Prototype Validation',
+  short:'Проверка ключевых продуктовых сценариев и гипотез на прототипе до финального дизайна и реализации',
+  why:'Без User Flows / Information Architecture его нельзя провести корректно — ещё не зафиксировано, какие сценарии, переходы и точки взаимодействия вообще должны работать. Проверяется не красота, а логика продукта.',
+  status:'missing', dur:'2–3 недели', progress:0,
+  items:[
+    {name:'Прототип для проверки сценариев', status:'missing', notes:[
+      {s:'r',t:'Low-fi / mid-fi прототип с помощью ИИ на основе User Flows / IA — без финального Visual Direction и production-дизайна'},
+    ]},
+    {name:'Список продуктовых гипотез для проверки', status:'missing', notes:[
+      {s:'r',t:'Какие продуктовые гипотезы должны быть подтверждены на прототипе до входа в Visual Direction и Design Production — не зафиксировано'},
+    ]},
+    {name:'Сценарное тестирование на приоритетных ICP', status:'missing', notes:[
+      {s:'r',t:'Проверка: понятна ли ценность, понятен ли путь до результата, понятна ли роль эксперта, возникает ли доверие, нет ли мест где пользователь теряется'},
+    ]},
+    {name:'Итерации прототипа по результатам тестирования', status:'missing', notes:[
+      {s:'r',t:'Фиксация проблем, барьеров, непонимания и слабых мест. Корректировка прототипа.'},
+    ]},
+    {name:'Подтверждённая логика ключевых сценариев', status:'missing', notes:[
+      {s:'r',t:'Результат, на основе которого уже можно идти в Visual Direction и Design Production — не получен'},
+    ]},
+  ]
+},
+{
+  id:7, num:'07',
+  name:'Visual Direction',
+  short:'Концептуальная визуальная система продукта: как ProHealth должен выглядеть и восприниматься во всех точках контакта',
+  why:'Без Prototype Validation в него слишком рано переходить — ещё не подтверждена логика ключевых сценариев.',
+  status:'missing', dur:'2–3 недели', progress:10,
+  items:[
+    {name:'Отдельные rough screens', status:'partial', notes:[
+      {s:'g',t:'Есть первые попытки визуально показать продукт'},
+      {s:'r',t:'Цельная визуальная концепция не собрана. Нет зафиксированной системы визуальных правил.'},
+    ]},
+    {name:'Visual Direction под конкретные ICP и рыночный контекст', status:'missing', notes:[
+      {s:'r',t:'Не определено, для какого продукта и ICP собирается visual direction'},
+    ]},
+    {name:'Цельная визуальная концепция продукта', status:'missing', notes:[
+      {s:'r',t:'Общий визуальный образ, характер, впечатление, уровень премиальности — не зафиксированы'},
+      {s:'r',t:'Как визуально передаётся доверие. Визуальные принципы — не определены'},
+    ]},
+    {name:'Сквозной визуальный язык для всех точек контакта', status:'missing', notes:[
+      {s:'r',t:'Единая стилистика для client-side, expert-side, web / mobile, отчётов, документов и витринных материалов — не собрана'},
+    ]},
+    {name:'Концепция фирменного стиля продукта', status:'missing', notes:[
+      {s:'r',t:'Типографика, цветовая система, формы, иконографика, принципы композиции, примерка стиля на ключевых носителях — не определены'},
+    ]},
+    {name:'Концепция визуального языка интерфейсов', status:'missing', notes:[
+      {s:'r',t:'Плотность интерфейса, принципы работы с информацией, принципы акцентов и визуальной иерархии, принципы отображения данных и статусов — не зафиксированы'},
+    ]},
+    {name:'Концепция визуального языка документов и результатов', status:'missing', notes:[
+      {s:'r',t:'Отчёты, результаты анализов, экспертные заключения, бланки, документы пользователя, витринные материалы — не определены'},
+    ]},
+  ]
+},
+{
+  id:8, num:'08',
+  name:'Design Production',
+  short:'Перевод логики продукта и visual direction в финальный production-ready дизайн для client-side, expert-side и всех носителей',
+  why:'Без подтверждённой логики и Visual Direction он рискует закрепить в дизайне то, что ещё не проверено, не согласовано или будет пересобираться.',
+  status:'missing', dur:'4–6 недели', progress:0,
+  items:[
+    {name:'Client-side design', status:'missing', notes:[
+      {s:'r',t:'Production-ready дизайн клиентского контура: финальные user flows, финальные экраны, все состояния, адаптация под форматы (mobile / web), готовность к передаче в разработку'},
+    ]},
+    {name:'Expert-side design', status:'missing', notes:[
+      {s:'r',t:'Production-ready дизайн экспертного контура: финальные user flows, финальные экраны, все состояния, адаптация под форматы'},
+    ]},
+    {name:'Дизайн документов, отчётов, результатов', status:'missing', notes:[
+      {s:'r',t:'Production-ready дизайн документов, отчётов, результатов анализов, экспертных заключений, бланков и документов пользователя'},
+    ]},
+    {name:'Design System / компонентная библиотека', status:'missing', notes:[
+      {s:'r',t:'Единая компонентная библиотека для всех контуров — не создана'},
+    ]},
+    {name:'Все состояния экранов и интерфейсных элементов', status:'missing', notes:[
+      {s:'r',t:'Состояния экранов, элементов, данных и решений в полном объёме — не зафиксированы'},
+    ]},
+  ]
+},
+{
+  id:9, num:'09',
+  name:'MVP / First Working Version',
+  short:'Сборка первой рабочей версии продукта и проверка её уже не в гипотезе, а в использовании',
+  why:'Без всех предыдущих слоёв он рискует собираться не на зафиксированной логике продукта, а на внутренних предположениях.',
+  status:'missing', dur:'4–8 недели', progress:0,
+  items:[
+    {name:'Реализованный клиентский контур', status:'missing', notes:[
+      {s:'r',t:'Client-side не реализован'},
+    ]},
+    {name:'Реализованный экспертный контур', status:'missing', notes:[
+      {s:'r',t:'Expert-side не реализован'},
+    ]},
+    {name:'MVP Validation: метрики и критерии успеха', status:'missing', notes:[
+      {s:'r',t:'Retention первых 30 дней: целевой порог — не определён'},
+      {s:'r',t:'Conversion к платной подписке: целевой порог — не определён'},
+      {s:'r',t:'Количество завершённых экспертных проверок: метрика — не зафиксирована'},
+      {s:'r',t:'Qualitative: понятность пути и доверие к продукту — метрика — не определена'},
+    ]},
+    {name:'Первый пилот с реальными пользователями', status:'missing', notes:[
+      {s:'r',t:'Тестирование с представителями приоритетных ICP — не запущено'},
+    ]},
+  ]
+}
+];
+
+const RISKS = [
+  {num:'01', icon:'🎯', iconBg:'rgba(239,68,68,0.12)', t:'Продуктовый риск',
+   items:['Собрать не тот MVP: включить лишнее и при этом не собрать критически важное','Зафиксировать в продукте не ту логику, которая действительно нужна пользователю','Получить рабочую версию, которая формально существует, но слабо решает ключевую задачу']},
+  {num:'02', icon:'⚡', iconBg:'rgba(245,158,11,0.12)', t:'Искажение приоритетов',
+   items:['Решения о том, что делать дальше, начинают приниматься ситуативно','В приоритете оказываются не самые важные для продукта элементы','Ресурс уходит не туда, где формируется реальная ценность MVP']},
+  {num:'03', icon:'👤', iconBg:'rgba(59,130,246,0.12)', t:'Хаос пользовательской логики',
+   items:['Путь пользователя, логика доверия, точки подключения экспертов собираются фрагментарно','Отдельные части продукта могут выглядеть правильно, но не складываться в цельную систему','Пользователь получает неуправляемый и местами противоречивый опыт']},
+  {num:'04', icon:'🏗', iconBg:'rgba(124,58,237,0.12)', t:'Управленческие риски',
+   items:['Продукт развивается по vision и отдельным сильным идеям без общей рамки принятия решений','Подключаемые специалисты могут работать по частям, а не в рамках единой системы','Проект начинает двигаться не по управляемой последовательности, а по ситуативным решениям']},
+  {num:'05', icon:'📈', iconBg:'rgba(20,184,166,0.12)', t:'Рыночные риски',
+   items:['Продукт может частично попасть в отдельные сегменты аудитории, но не раскрыть потенциал более точного попадания в приоритетные ICP','Сильная идея продукта может быть реализована слабее своего реального рыночного потенциала']},
+  {num:'06', icon:'💸', iconBg:'rgba(100,116,139,0.12)', t:'Финансово-операционные риски',
+   items:['Ошибки в логике продукта будут обнаруживаться позже — на этапе прототипа, дизайна, разработки или пилота','Стоимость изменений на этих этапах становится существенно выше','Итоговый риск — лишние итерации, сдвиг сроков и прямые потери денег и управленческого ресурса']},
+];
+
+const GANTT = [
+  {num:'00', name:'Product Audit + системная сборка', start:1, dur:2, color:'#14b8a6', prog:100, isSys:false,
+   out:['Системная карта продукта','Понимание: что есть, чего не хватает, где разрывы','Обоснованная логика дальнейшей работы над продуктом']},
+  {num:'01', name:'Strategy / Market', start:3, dur:2, color:'#f59e0b', prog:10, isSys:false,
+   out:['Целевые ICP и их приоритет','JTBD по целевым ICP','Ценность продукта','Основания доверия','УТП','Позиционирование']},
+  {num:'02', name:'Product Definition', start:5, dur:3, color:'#f59e0b', prog:25, isSys:false,
+   out:['Product Definition','Рамка продукта','Product Value','Expert-side рамка продукта','Состав и границы MVP','Критерии успеха MVP','Связь MVP с Business Goals']},
+  {num:'03', name:'UX Concept', start:8, dur:3, color:'#64748b', prog:0, isSys:false,
+   out:['Client-side UX concept','Expert-side UX concept','Модель доверия и безопасности','Модель ролей в опыте взаимодействия','Логика взаимодействия пользователя, системы и экспертов']},
+  {num:'04', name:'User Flows / IA', start:11, dur:3, color:'#64748b', prog:0, isSys:false,
+   out:['Client-side user flows','Expert-side user flows','Information Architecture','Структура экранов','Карта состояний экранов, данных и решений']},
+  {num:'05', name:'Prototype Validation', start:14, dur:2, color:'#64748b', prog:0, isSys:false,
+   out:['Low-fi / mid-fi прототип','Продуктовые гипотезы для проверки','Обратная связь по ключевым сценариям','Слабые места и барьеры','Подтверждённая логика ключевых сценариев']},
+  {num:'06', name:'Visual Direction', start:16, dur:3, color:'#64748b', prog:0, isSys:false,
+   out:['Visual Direction','Визуальный образ продукта','Сквозной визуальный язык','Концепция фирменного стиля','Концепция визуального языка интерфейсов','Концепция визуального языка документов']},
+  {num:'07', name:'Design Production', start:19, dur:5, color:'#64748b', prog:0, isSys:false,
+   out:['Production-ready client-side design','Production-ready expert-side design','Production-ready дизайн документов, отчётов и экспертных заключений','Production-ready UI kit / design system','Материалы для передачи в разработку']},
+  {num:'08', name:'MVP / First Working Version', start:24, dur:3, color:'#64748b', prog:0, isSys:false,
+   out:['Первая рабочая версия client-side','Первая рабочая версия expert-side','Системная реализация MVP','MVP Validation на пилотной группе']},
+];
+
+// ═══════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════
+function stBadge(s){
+  if(s==='done') return '<span class="st-badge st-yes"><i class="st-chk"></i>Есть</span>';
+  if(s==='partial') return '<span class="st-badge st-part">◑ Частично</span>';
+  return '<span class="st-badge st-no">✕ Нет</span>';
+}
+function bicoIcon(s){
+  const map={g:'✓',r:'✕',b:'→',a:'◑',d:'✓'};
+  return `<span class="bico bico-${s}">${map[s]||'·'}</span>`;
+}
+function pColor(st){
+  return st==='done'?'var(--accent)':st==='partial'?'var(--a)':'rgba(100,116,139,0.35)';
+}
+
+// ═══════════════════════════════════════
+// RENDER ACCORDION
+// ═══════════════════════════════════════
+function renderAcc(){
+  const c = document.getElementById('acc');
+  c.innerHTML = LAYERS.map(l => {
+    const pc = pColor(l.status);
+    const innerItems = l.items.map((item, ii) => {
+      const notes = item.notes.map(n =>
+        `<div class="l3-item">${bicoIcon(n.s)}<span>${n.t}</span></div>`
+      ).join('');
+      return `
+        <div class="l2-row" id="l2-${l.id}-${ii}">
+          <div class="l2-h" onclick="toggleL2('l2-${l.id}-${ii}')">
+            <div class="l2-num">${String(ii+1).padStart(2,'0')}</div>
+            <div class="l2-name">${item.name}</div>
+            <div class="l2-right">${stBadge(item.status)}<span class="l2-arrow">›</span></div>
+          </div>
+          <div class="l2-body">
+            <div class="l2-inner">${notes}</div>
+          </div>
+        </div>`;
+    }).join('');
+
+    return `
+      <div class="acc-row" id="lr-${l.id}">
+        <div class="acc-prog"><div class="acc-prog-fill" style="width:0%;background:${pc}" data-w="${l.progress}%"></div></div>
+        <div class="acc-h" onclick="toggleL(${l.id})">
+          <div class="acc-num">${l.num}</div>
+          <div class="acc-info">
+            <div class="acc-name">${l.name}</div>
+            <div class="acc-short">${l.short}</div>
+          </div>
+          <div class="acc-right">
+            ${stBadge(l.status)}
+            <div class="acc-dur">⏱ ${l.dur}</div>
+          </div>
+          <span class="acc-arrow">›</span>
+        </div>
+        <div class="acc-body">
+          <div class="acc-inner">
+            <div class="l2-list">${innerItems}</div>
+            <div class="acc-why-block">${l.why}</div>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+
+  setTimeout(()=>{
+    document.querySelectorAll('.acc-prog-fill').forEach(el=>{
+      el.style.transition='width 1.2s ease';
+      el.style.width=el.dataset.w;
+    });
+  },200);
+}
+
+// ═══════════════════════════════════════
+// RENDER RISKS
+// ═══════════════════════════════════════
+function renderRisks(){
+  const c = document.getElementById('risks-list');
+  c.innerHTML = RISKS.map(r => `
+    <div class="acc-row" id="rr-${r.num}">
+      <div class="acc-h" onclick="toggleRisk('${r.num}')">
+        <div class="acc-num">${r.num}</div>
+        <div class="acc-info">
+          <div class="acc-name">${r.t}</div>
+        </div>
+        <div class="acc-arrow">›</div>
+      </div>
+      <div class="acc-body">
+        <div class="risk-card-items">
+          ${r.items.map(i=>`<div class="risk-item-row"><span class="rx">✕</span><span>${i}</span></div>`).join('')}
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function toggleRisk(num){
+  const row = document.getElementById(`rr-${num}`);
+  const isOpen = row.classList.contains('open');
+  document.querySelectorAll('#risks-list .acc-row').forEach(r => r.classList.remove('open'));
+  if(!isOpen) row.classList.add('open');
+}
+
+// ═══════════════════════════════════════
+// RENDER GANTT
+// ═══════════════════════════════════════
+function renderGantt(){
+  const W=27;
+  const labelsEl = document.getElementById('gantt-labels');
+  const tracksEl = document.getElementById('gantt');
+
+  let labelsHtml = `<div class="gtt-rows-lbl">`;
+  let tracksHtml = `<div class="gtt-rows" style="min-width:${W*42+60}px;padding-right:40px">`;
+
+  GANTT.forEach((row,i)=>{
+    const lPct=((row.start-1)/W)*100;
+    const wPct=(row.dur/W)*100;
+    let bg, barClass='';
+    if(row.isSys){
+      bg='transparent'; barClass='sys-bar';
+    } else if(row.prog>0){
+      bg=`${row.color}bb`;
+    } else {
+      bg='rgba(100,116,139,0.25)';
+    }
+    const bullets = row.out.map(b=>
+      `<div class="gtt-bullet"><i class="gtt-chk"></i><span>${b}</span></div>`
+    ).join('');
+
+    labelsHtml+=`<div class="gtt-label" data-gi="${i}">
+      <div class="gtt-num">${row.num}</div>
+      <div class="gtt-name${row.isSys?' sys-dim':''}">${row.name}</div>
+    </div>`;
+
+    tracksHtml+=`<div class="gtt-row" data-gi="${i}">
+      <div class="gtt-track">
+        <div class="gtt-grid">${Array.from({length:W},()=>`<div class="gtt-gc"></div>`).join('')}</div>
+        <div class="gtt-bar-wrap">
+          <div class="gtt-bar ${barClass}" style="left:${lPct}%;width:${wPct}%;${row.isSys?'':`background:${bg};border:1px solid ${row.color}44`}"><span style="font-size:9px;opacity:0.75;font-family:'JetBrains Mono',monospace;white-space:nowrap">${row.dur} ${wkRu(row.dur)}</span></div>
+        </div>
+        <div class="gtt-out-wrap" style="padding-left:${lPct}%">
+          <div class="gtt-out">${bullets}</div>
+        </div>
+      </div>
+    </div>`;
+  });
+
+  labelsHtml+=`</div>`;
+  tracksHtml+=`</div>
+`;
+
+  labelsEl.innerHTML = labelsHtml;
+  tracksEl.innerHTML = tracksHtml;
+
+  // Sync row heights
+  requestAnimationFrame(()=>{
+    const lblRows = labelsEl.querySelectorAll('.gtt-label');
+    const trkRows = tracksEl.querySelectorAll('.gtt-row');
+    lblRows.forEach((lbl,i)=>{
+      const trkH = trkRows[i] ? trkRows[i].getBoundingClientRect().height : 0;
+      const lblH = lbl.getBoundingClientRect().height;
+      const h = Math.max(trkH, lblH);
+      lbl.style.height = h+'px';
+      if(trkRows[i]) trkRows[i].style.minHeight = h+'px';
+    });
+  });
+}
+
+// ═══════════════════════════════════════
+// INTERACTIONS
+// ═══════════════════════════════════════
+function toggleL(id){
+  document.getElementById(`lr-${id}`).classList.toggle('open');
+}
+function toggleL2(id){
+  document.getElementById(id).classList.toggle('open');
+}
+function stl(id){
+  setTimeout(()=>{
+    const el=document.getElementById(`lr-${id}`);
+    if(el){
+      el.scrollIntoView({behavior:'smooth',block:'center'});
+      if(!el.classList.contains('open')) toggleL(id);
+    }
+  },100);
+}
+function sa(el){
+  document.querySelectorAll('.sbi').forEach(n=>n.classList.remove('on'));
+  el.classList.add('on');
+}
+
+// Scroll progress
+window.addEventListener('scroll',()=>{
+  const d=document.documentElement;
+  document.getElementById('spb').style.width=(d.scrollTop/(d.scrollHeight-d.clientHeight)*100)+'%';
+});
+
+// Scroll spy
+const navLinks=document.querySelectorAll('.sbi[href]');
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      const id=e.target.id;
+      navLinks.forEach(n=>{
+        n.classList.remove('on');
+        if(n.getAttribute('href')==='#'+id) n.classList.add('on');
+      });
+    }
+  });
+},{rootMargin:'-20% 0px -70% 0px'});
+document.querySelectorAll('.sec,.hero').forEach(s=>io.observe(s));
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+function wkRu(n){
+  if(n===1) return 'неделя';
+  if(n>=2&&n<=4) return 'недели';
+  return 'недель';
+}
+
+function initGanttDrag(){
+  const el = document.querySelector('.gantt-scroll');
+  if(!el) return;
+  let isDown=false, startX, scrollLeft;
+  el.addEventListener('mousedown', e=>{
+    isDown=true; el.classList.add('dragging');
+    startX=e.pageX-el.offsetLeft; scrollLeft=el.scrollLeft;
+  });
+  el.addEventListener('mouseleave',()=>{ isDown=false; el.classList.remove('dragging'); });
+  el.addEventListener('mouseup',()=>{ isDown=false; el.classList.remove('dragging'); });
+  el.addEventListener('mousemove', e=>{
+    if(!isDown) return;
+    e.preventDefault();
+    el.scrollLeft = scrollLeft-(e.pageX-el.offsetLeft-startX);
+  });
+}
+
+renderAcc();
+renderRisks();
+renderGantt();
+initGanttDrag();
+</script>
+</body>
+</html>
